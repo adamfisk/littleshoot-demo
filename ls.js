@@ -27,9 +27,6 @@ lsLoader = {
             if (plugin) {
                 if (!$.browser.msie) {
                     console.info("Found LittleShoot!!");
-                    //$("#lsEmbed").html('<embed type="application/x-littleshoot" pluginspage="http://www.littleshoot.org"></embed>');
-                    //CommonUtils.littleShootNpapiCallback(true, 0.90);
-                    //lsLoader.fadeLoading();
                     return true;
                 } else {
                     return false;
@@ -84,11 +81,37 @@ lsLoader = {
  * the check elsewhere.
  */
 jQuery().ready(function() {
+	
+	function popitup(url) {
+		newwindow=window.open(url,'name','height=300,width=750');
+		if (window.focus) {newwindow.focus()}
+		return false;
+	}
+	
+	$(function(){
+	    $(window).resize(function(){
+	        placeFooter();
+	    });
+	    placeFooter();
+	    // hide it before it's positioned
+	    $('#fixedFooter').css('display','inline');
+	});
+
+	function placeFooter() {    
+	    var windHeight = $(window).height();
+	    var footerHeight = $('#footer').height();
+	    var offset = parseInt(windHeight) - parseInt(footerHeight);
+	    $('#fixedFooter').css('top',offset);
+	}
+	
+	//function appendDownloadFooter() {
+	//	$('body').append("<div id='footer' style='position: absolute; display: none;'>I am a footer</div>");
+	//}
+
 	var torrentLink = $('a[title="Torrent File"]').attr('href');
 	$('.toolbarLink').click(function(event) {
 		if (lsLoader.hasLs()) {
-			window.location.href = torrentLink + "?referer="+
-				encodeURIComponent(window.location.href);
+			popitup("http://www.littleshoot.org/downloadsDemo")
 		} else {
 			alert("Install LittleShoot?");
 		}
