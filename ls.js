@@ -87,7 +87,7 @@ jQuery().ready(function() {
 		if (window.focus) {newwindow.focus()}
 		return false;
 	}
-	
+	/*
 	$(function(){
 	    $(window).resize(function(){
 	        placeFooter();
@@ -103,6 +103,7 @@ jQuery().ready(function() {
 	    var offset = parseInt(windHeight) - parseInt(footerHeight);
 	    $('#fixedFooter').css('top',offset);
 	}
+	*/
 	
 	//function appendDownloadFooter() {
 	//	$('body').append("<div id='footer' style='position: absolute; display: none;'>I am a footer</div>");
@@ -111,9 +112,14 @@ jQuery().ready(function() {
 	var torrentLink = $('a[title="Torrent File"]').attr('href');
 	$('.toolbarLink').click(function(event) {
 		if (lsLoader.hasLs()) {
-			popitup("http://www.littleshoot.org/downloadsDemo")
+			//popitup("http://www.littleshoot.org/downloadsDemo?" +
+			popitup("http://localhost:8000/downloadsDemo" +
+				"?uri="+encodeURIComponent(torrentLink)+
+				"&referer="+encodeURIComponent(window.navigator.url)+
+				"&title="+encodeURIComponent(document.title));
 		} else {
 			alert("Install LittleShoot?");
+			// TODO: Call installer and scan for LittleShoot...
 		}
 		event.stopPropagation();
 		event.preventDefault();
