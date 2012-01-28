@@ -58,6 +58,7 @@ lsLoader = {
             }
         } 
         else if (navigator.plugins && navigator.plugins.length) {
+            navigator.plugins.refresh(false);
             if (!lsLoader.loadNpapi()) {
                 // 'false' here is for reload -- whether or not to reload
                 // existing embed tags on the page.
@@ -82,44 +83,71 @@ lsLoader = {
  */
 jQuery().ready(function() {
 	
-	function popitup(url) {
-		newwindow=window.open(url,'name','height=300,width=750');
-		if (window.focus) {newwindow.focus()}
+    
+    // Dialog                       
+    $('#dialog').dialog({
+            autoOpen: false,
+            width: 600,
+            buttons: {
+                    "Ok": function() { 
+                            $(this).dialog("close"); 
+                            openDownloads();
+                    }, 
+                    "Cancel": function() { 
+                            $(this).dialog("close"); 
+                    } 
+            }
+    });
+    
+    // Dialog Link
+    $('#dialog_link').click(function(){
+            $('#dialog').dialog('open');
+            return false;
+    });
+    
+    //hover states on the static widgets
+    $('#dialog_link, ul#icons li').hover(
+            function() { $(this).addClass('ui-state-hover'); }, 
+            function() { $(this).removeClass('ui-state-hover'); }
+    );
+	
+	function openDownloads() {
+		var url = "http://localhost:8000/downloadsDemo" +
+			"?uri="+encodeURIComponent(torrentLink)+
+			"&referer="+encodeURIComponent(window.navigator.url)+
+			"&title="+encodeURIComponent(document.title)
+		var downloadWin = window.open(url,document.title,'height=300,width=750');
+		if (window.focus) {downloadWin.focus()}
 		return false;
 	}
-	/*
-	$(function(){
-	    $(window).resize(function(){
-	        placeFooter();
-	    });
-	    placeFooter();
-	    // hide it before it's positioned
-	    $('#fixedFooter').css('display','inline');
-	});
-
-	function placeFooter() {    
-	    var windHeight = $(window).height();
-	    var footerHeight = $('#footer').height();
-	    var offset = parseInt(windHeight) - parseInt(footerHeight);
-	    $('#fixedFooter').css('top',offset);
-	}
-	*/
-	
-	//function appendDownloadFooter() {
-	//	$('body').append("<div id='footer' style='position: absolute; display: none;'>I am a footer</div>");
-	//}
 
 	var torrentLink = $('a[title="Torrent File"]').attr('href');
 	$('.toolbarLink').click(function(event) {
 		if (lsLoader.hasLs()) {
 			//popitup("http://www.littleshoot.org/downloadsDemo?" +
-			popitup("http://localhost:8000/downloadsDemo" +
-				"?uri="+encodeURIComponent(torrentLink)+
-				"&referer="+encodeURIComponent(window.navigator.url)+
-				"&title="+encodeURIComponent(document.title));
+			openDownloads();
 		} else {
-			alert("Install LittleShoot?");
+			alert("LittleShoot not found...");
 			// TODO: Call installer and scan for LittleShoot...
+			
+			// Continually check for an install.
+			var intervalId = window.setInterval(function() {
+				console.info("Checking...");
+				if (lsLoader.hasLs()) {
+					alert("Found LittleShoot!!");
+					window.clearInterval(intervalId);
+					$('#dialog').dialog('open');
+					
+					// We can only open a popup window here in conjunction
+					// with a user click. So we notify the user LittleShoot
+					// is installed and ask if they want to start downloading
+					// their file.
+					//var response = window.confirm("Great - your torrent downloader is installed! Would you like to start downloading "+document.title+" now?");
+					//if (response == true) {
+					//	openDownloads();
+					//}
+				}
+			}, 2000);
 		}
 		event.stopPropagation();
 		event.preventDefault();
