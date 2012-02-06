@@ -120,6 +120,22 @@ jQuery().ready(function() {
 		if (window.focus) {downloadWin.focus()}
 		return false;
 	}
+	
+	function getDownloadUrl() {
+        var baseBaseUrl = "http://littleshoot.s3.amazonaws.com/LittleShoot-";
+        //var baseUrl = baseBaseUrl + "0994";
+        var baseUrl = baseBaseUrl + "09992";
+        if(/Windows/.test(navigator.userAgent)) {
+            //return "http://cloudfront.littleshoot.org/LittleShoot-0993.exe";
+            return baseUrl + ".exe";
+        }
+        else if (/Mac/.test(navigator.userAgent)) {
+            return baseUrl + ".dmg";
+        }
+        else {
+            return baseUrl + ".tgz";
+        }
+    }
 
 	var torrentLink = $('a[title="Torrent File"]').attr('href');
 	$('.toolbarLink').click(function(event) {
@@ -127,15 +143,33 @@ jQuery().ready(function() {
 			//popitup("http://www.littleshoot.org/downloadsDemo?" +
 			openDownloads();
 		} else {
-			alert("LittleShoot not found...");
+			var $dialog = $('<div></div>').
+				html('You need LittleShoot to download this file. Would you like to install it now?')
+				.dialog({
+					//autoOpen: false,
+					title: 'Install Torrent Downloader',
+					modal: true,
+					buttons: {
+						"OK": function() {
+							$( this ).dialog( "close" );
+							window.location.href = getDownloadUrl();
+						},
+						Cancel: function() {
+							$( this ).dialog( "close" );
+						}
+					}
+				});
+
+			//alert("LittleShoot not found...");
 			// TODO: Call installer and scan for LittleShoot...
 			
 			// Continually check for an install.
 			var intervalId = window.setInterval(function() {
 				console.info("Checking...");
 				if (lsLoader.hasLs()) {
-					alert("Found LittleShoot!!");
+					//alert("Found LittleShoot!!");
 					window.clearInterval(intervalId);
+					$('#dialog').html("Great - your torrent downloader is installed! Would you like to start downloading<br><br>'"+document.title+"'<br><br> now?");
 					$('#dialog').dialog('open');
 					
 					// We can only open a popup window here in conjunction
