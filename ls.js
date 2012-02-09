@@ -112,7 +112,7 @@ jQuery().ready(function() {
     );
 	
 	function openDownloads() {
-		var url = "http://localhost:8000/downloadsDemo" +
+		var url = "downloads.html" +
 			"?uri="+encodeURIComponent(torrentLink)+
 			"&referer="+encodeURIComponent(window.navigator.url)+
 			"&title="+encodeURIComponent(document.title)
@@ -124,7 +124,7 @@ jQuery().ready(function() {
 	function getDownloadUrl() {
         var baseBaseUrl = "http://littleshoot.s3.amazonaws.com/LittleShoot-";
         //var baseUrl = baseBaseUrl + "0994";
-        var baseUrl = baseBaseUrl + "09992";
+        var baseUrl = baseBaseUrl + "0.9992";
         if(/Windows/.test(navigator.userAgent)) {
             //return "http://cloudfront.littleshoot.org/LittleShoot-0993.exe";
             return baseUrl + ".exe";
@@ -169,9 +169,24 @@ jQuery().ready(function() {
 				if (lsLoader.hasLs()) {
 					//alert("Found LittleShoot!!");
 					window.clearInterval(intervalId);
-					$('#dialog').html("Great - your torrent downloader is installed! Would you like to start downloading<br><br>'"+document.title+"'<br><br> now?");
-					$('#dialog').dialog('open');
+					//$('#dialog').html("Great - your torrent downloader is installed! Would you like to start downloading<br><br>'"+document.title+"'<br><br> now?");
+					//$('#dialog').dialog('open');
 					
+					var $dialog = $('<div></div>').html("Great - your torrent downloader is installed! Would you like to start downloading<br><br>'"+document.title+"'<br><br> now?")
+					.dialog({
+						//autoOpen: false,
+						title: 'Download File?',
+						modal: true,
+						buttons: {
+							"OK": function() {
+								$( this ).dialog( "close" );
+								openDownloads();
+							},
+							Cancel: function() {
+								$( this ).dialog( "close" );
+							}
+						}
+					});
 					// We can only open a popup window here in conjunction
 					// with a user click. So we notify the user LittleShoot
 					// is installed and ask if they want to start downloading
